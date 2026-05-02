@@ -28,6 +28,7 @@ export default function Register() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, role }),
+        credentials: 'include',
       });
       const data = await res.json();
 
@@ -79,60 +80,60 @@ export default function Register() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <div className="relative group">
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
               type="text"
               placeholder="Full Name"
-              className="input-field pl-12"
+              className="input-field !pl-12"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
             />
           </div>
 
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <div className="relative group">
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
               type="email"
               placeholder="Email address"
-              className="input-field pl-12"
+              className="input-field !pl-12"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
             />
           </div>
 
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <div className="relative group">
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
               type="password"
               placeholder="Password"
-              className="input-field pl-12"
+              className="input-field !pl-12"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
             />
           </div>
 
-          <div className="relative">
-            <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <div className="relative group">
+            <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
               type="text"
               placeholder={role === 'owner' ? "Degree" : "Skill Level / Education"}
-              className="input-field pl-12"
+              className="input-field !pl-12"
               value={formData.degree}
               onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
               required
             />
           </div>
 
-          <div className="relative">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <div className="relative group">
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
               type="text"
               placeholder="Address"
-              className="input-field pl-12"
+              className="input-field !pl-12"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               required

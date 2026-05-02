@@ -30,7 +30,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/auth/me')
+    fetch('/api/auth/me', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (data.user) setUser(data.user);
@@ -40,7 +40,7 @@ function App() {
 
   const login = (userData: User) => setUser(userData);
   const logout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     setUser(null);
   };
 
@@ -84,7 +84,7 @@ function Layout() {
   const navItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/', roles: ['owner'] },
     { label: 'Attendance', icon: Calendar, path: '/attendance', roles: ['owner', 'leader'] },
-    { label: 'Workers', icon: Users, path: '/workers', roles: ['owner'] },
+    { label: 'Workers', icon: Users, path: '/workers', roles: ['owner', 'leader'] },
     { label: 'History', icon: History, path: '/history', roles: ['owner', 'leader'] },
   ];
 
@@ -94,7 +94,7 @@ function Layout() {
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Mobile Header */}
       <header className="bg-white border-b border-gray-100 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight text-brand">Attendence</h1>
+        <h1 className="text-xl font-bold tracking-tight text-brand">Attendance</h1>
         <button onClick={() => setIsMenuOpen(true)} className="p-2 -mr-2">
           <Menu size={24} />
         </button>

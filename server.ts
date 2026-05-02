@@ -54,15 +54,18 @@ async function startServer() {
   // Register
   app.post("/api/auth/register", (req, res) => {
     const { email, password, name, role, degree, address } = req.body;
+    console.log(`Register attempt for: ${email}`);
     const db = readDb();
+    const normalizedEmail = email.toLowerCase();
 
-    if (db.users.find(u => u.email === email)) {
+    if (db.users.find((u: any) => u.email.toLowerCase() === normalizedEmail)) {
+      console.log("Registration failed: User exists");
       return res.status(400).json({ message: "User already exists" });
     }
 
     const newUser = {
       id: Date.now().toString(),
-      email,
+      email: normalizedEmail,
       password, // In a real app, hash this!
       name,
       role, // 'owner' | 'leader'
@@ -75,28 +78,50 @@ async function startServer() {
     writeDb(db);
 
     const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, JWT_SECRET);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'none',
+      maxAge: 3600000 * 24 
+    });
+    console.log("Registration success:", newUser.id);
     res.json({ user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role } });
   });
 
   // Login
   app.post("/api/auth/login", (req, res) => {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`);
     const db = readDb();
-    const user = db.users.find(u => u.email === email && u.password === password);
+    const normalizedEmail = email.toLowerCase();
+    
+    const user = db.users.find((u: any) => 
+      u.email.toLowerCase() === normalizedEmail && u.password === password
+    );
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      console.log("Login failed: Invalid credentials or user not found");
+      return res.status(401).json({ message: "Invalid credentials. Please register if you haven't already." });
     }
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'none',
+      maxAge: 3600000 * 24 
+    });
+    console.log("Login success:", user.id);
     res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
   });
 
   // Logout
   app.post("/api/auth/logout", (req, res) => {
-    res.clearCookie("token");
+    res.clearCookie("token", { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'none' 
+    });
     res.json({ message: "Logged out" });
   });
 
@@ -108,7 +133,7 @@ async function startServer() {
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) return res.json({ user: null });
       const db = readDb();
-      const user = db.users.find(u => u.id === decoded.id);
+      const user = db.users.find(u => u.id === (decoded as any).id);
       if (!user) return res.json({ user: null });
       res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
     });
@@ -117,13 +142,12 @@ async function startServer() {
   // Workers
   app.get("/api/workers", authenticateToken, (req, res) => {
     const db = readDb();
-    // In this simple app, all workers are visible to the owner/leader of the same "org" 
-    // (for MVP simplicity, we'll just show all workers added by anyone or filter by owner)
     const workers = db.workers;
     res.json(workers);
   });
 
   app.post("/api/workers", authenticateToken, (req, res) => {
+    console.log("Worker creation request:", req.body);
     const { name, phone, role, address } = req.body;
     const db = readDb();
     const newWorker = {
@@ -132,11 +156,12 @@ async function startServer() {
       phone,
       role,
       address,
-      createdBy: req.user.id,
+      createdBy: (req as any).user.id,
       createdAt: new Date().toISOString()
     };
     db.workers.push(newWorker);
     writeDb(db);
+    console.log("Worker created success:", newWorker.id);
     res.json(newWorker);
   });
 

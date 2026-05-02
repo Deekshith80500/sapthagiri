@@ -12,8 +12,8 @@ export default function History() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/workers').then(res => res.json()),
-      fetch('/api/attendance').then(res => res.json())
+      fetch('/api/workers', { credentials: 'include' }).then(res => res.json()),
+      fetch('/api/attendance', { credentials: 'include' }).then(res => res.json())
     ]).then(([workersData, attendanceData]) => {
       setWorkers(Array.isArray(workersData) ? workersData : []);
       setAttendance(Array.isArray(attendanceData) ? attendanceData : []);

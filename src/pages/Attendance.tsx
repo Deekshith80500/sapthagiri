@@ -16,8 +16,8 @@ export default function Attendance() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/workers').then(res => res.json()),
-      fetch('/api/attendance').then(res => res.json())
+      fetch('/api/workers', { credentials: 'include' }).then(res => res.json()),
+      fetch('/api/attendance', { credentials: 'include' }).then(res => res.json())
     ]).then(([workersData, attendanceData]) => {
       setWorkers(Array.isArray(workersData) ? workersData : []);
       
@@ -55,6 +55,7 @@ export default function Attendance() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date: todayStr, records }),
+        credentials: 'include',
       });
       
       if (res.ok) {
@@ -100,12 +101,12 @@ export default function Attendance() {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+      <div className="relative group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
         <input 
           type="text" 
           placeholder="Search by name or role..." 
-          className="input-field pl-12"
+          className="input-field !pl-12"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
