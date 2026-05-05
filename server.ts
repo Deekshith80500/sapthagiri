@@ -38,10 +38,14 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json({ limit: '10mb' }));
+  app.use(express.json({ limit: '50mb' }));
   app.use(cookieParser());
 
   // --- API Routes ---
+
+  app.get("/api/health", (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
 
   // Auth Middleware
   const authenticateToken = (req, res, next) => {
@@ -60,9 +64,9 @@ async function startServer() {
     const { email, password, name, role, degree, address, inviteCode } = req.body;
     console.log(`Register attempt for: ${email}`);
     const db = readDb();
-    const normalizedEmail = email.toLowerCase();
-
-    if (db.users.find((u: any) => u.email.toLowerCase() === normalizedEmail)) {
+    const normalizedEmail = email.trim().toLowerCase();
+    
+    if (db.users.find((u: any) => u.email.trim().toLowerCase() === normalizedEmail)) {
       console.log("Registration failed: User exists");
       return res.status(400).json({ message: "An account with this email already exists. Please log in instead." });
     }
@@ -78,7 +82,7 @@ async function startServer() {
     const newUser = {
       id: Date.now().toString(),
       email: normalizedEmail,
-      password, // In a real app, hash this!
+      password: password.trim(), // In a real app, hash this!
       name,
       role, // 'owner' | 'leader'
       degree,
@@ -105,16 +109,27 @@ async function startServer() {
     const { email, password } = req.body;
     console.log(`Login attempt for: ${email}`);
     const db = readDb();
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
     
-    const user = db.users.find((u: any) => 
-      u.email.toLowerCase() === normalizedEmail && u.password === password
+    if (db.users.length === 0) {
+      return res.status(401).json({ message: "No accounts found in system. Please register first." });
+    }
+
+    const userByEmail = db.users.find((u: any) => 
+      u.email.trim().toLowerCase() === normalizedEmail
     );
 
-    if (!user) {
-      console.log("Login failed: Invalid credentials or user not found");
-      return res.status(401).json({ message: "Invalid credentials. Please register if you haven't already." });
+    if (!userByEmail) {
+      console.log(`Login failed: User not found for email ${normalizedEmail}`);
+      return res.status(401).json({ message: "No account found with this email. Please register first." });
     }
+
+    if (userByEmail.password !== password.trim()) {
+      console.log(`Login failed: Incorrect password for email ${normalizedEmail}`);
+      return res.status(401).json({ message: "Incorrect password. Please try again." });
+    }
+
+    const user = userByEmail;
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET);
     res.cookie("token", token, { 

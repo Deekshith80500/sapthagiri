@@ -13,7 +13,7 @@ export default function Attendance() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const [activeCamera, setActiveCamera] = useState<{ id: string, name: string } | null>(null);
+  const [activeCamera, setActiveCamera] = useState<{ id: string, name: string, photo?: string } | null>(null);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -44,7 +44,7 @@ export default function Attendance() {
   const handleToggle = (workerId: string, status: 'present' | 'absent') => {
     if (status === 'present' && marks[workerId] !== 'present') {
       const worker = workers.find(w => w.id === workerId);
-      setActiveCamera({ id: workerId, name: worker?.name || 'Worker' });
+      setActiveCamera({ id: workerId, name: worker?.name || 'Worker', photo: worker?.photo });
       return;
     }
 
@@ -229,6 +229,7 @@ export default function Attendance() {
         {activeCamera && (
           <CameraCapture 
             title={`Check-in: ${activeCamera.name}`}
+            profilePhoto={activeCamera.photo}
             onCapture={(photo) => handleCapture(activeCamera.id, photo)}
             onClose={() => setActiveCamera(null)}
           />
