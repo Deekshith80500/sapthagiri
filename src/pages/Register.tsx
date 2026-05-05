@@ -11,7 +11,8 @@ export default function Register() {
     email: '',
     password: '',
     degree: '',
-    address: ''
+    address: '',
+    inviteCode: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -128,6 +129,20 @@ export default function Register() {
             />
           </div>
 
+          {role === 'leader' && (
+            <div className="relative group overflow-hidden">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
+              <input
+                type="text"
+                placeholder="Leader Invitation Code"
+                className="input-field !pl-12"
+                value={formData.inviteCode}
+                onChange={(e) => setFormData({ ...formData, inviteCode: e.target.value })}
+                required={role === 'leader'}
+              />
+            </div>
+          )}
+
           <div className="relative group">
             <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
@@ -140,7 +155,16 @@ export default function Register() {
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm px-2">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-100 p-4 rounded-2xl">
+              <p className="text-red-600 text-sm font-medium">{error}</p>
+              {error.includes("exists") && (
+                <Link to="/login" className="text-xs text-red-500 hover:underline mt-1 inline-block font-semibold">
+                  Go to Login →
+                </Link>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"

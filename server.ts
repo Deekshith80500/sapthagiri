@@ -14,7 +14,10 @@ const JWT_SECRET = process.env.JWT_SECRET || "attendance-secret-key-123";
 const initialDb = {
   users: [],
   workers: [],
-  attendance: []
+  attendance: [],
+  settings: {
+    leaderInviteCode: "LEAD123"
+  }
 };
 
 // Helper to read/write DB
@@ -23,7 +26,8 @@ const readDb = () => {
     fs.writeFileSync(DB_FILE, JSON.stringify(initialDb, null, 2));
     return initialDb;
   }
-  return JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
+  const data = JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
+  return { ...initialDb, ...data };
 };
 
 const writeDb = (data) => {
@@ -34,7 +38,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
   app.use(cookieParser());
 
   // --- API Routes ---
@@ -53,14 +57,22 @@ async function startServer() {
 
   // Register
   app.post("/api/auth/register", (req, res) => {
-    const { email, password, name, role, degree, address } = req.body;
+    const { email, password, name, role, degree, address, inviteCode } = req.body;
     console.log(`Register attempt for: ${email}`);
     const db = readDb();
     const normalizedEmail = email.toLowerCase();
 
     if (db.users.find((u: any) => u.email.toLowerCase() === normalizedEmail)) {
       console.log("Registration failed: User exists");
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "An account with this email already exists. Please log in instead." });
+    }
+
+    // Verify invite code for team leaders
+    if (role === 'leader') {
+      const settings = db.settings || initialDb.settings;
+      if (inviteCode !== settings.leaderInviteCode) {
+        return res.status(400).json({ message: "Invalid leader invitation code. Please ask the owner for the correct code." });
+      }
     }
 
     const newUser = {
@@ -146,14 +158,64 @@ async function startServer() {
     res.json(workers);
   });
 
+  app.put("/api/workers/:id", authenticateToken, (req, res) => {
+    const { id } = req.params;
+    const { name, phone, role, address, photo } = req.body;
+    const db = readDb();
+    const workerIndex = db.workers.findIndex((w: any) => w.id === id);
+
+    if (workerIndex === -1) {
+      return res.status(404).json({ message: "Worker not found" });
+    }
+
+    // Verify ownership
+    if (db.workers[workerIndex].createdBy !== (req as any).user.id && (req as any).user.role !== 'owner') {
+      return res.status(403).json({ message: "Not authorized to edit this worker" });
+    }
+
+    db.workers[workerIndex] = {
+      ...db.workers[workerIndex],
+      name,
+      phone,
+      role,
+      address,
+      photo,
+      updatedAt: new Date().toISOString()
+    };
+
+    writeDb(db);
+    res.json(db.workers[workerIndex]);
+  });
+
+  app.delete("/api/workers/:id", authenticateToken, (req, res) => {
+    const { id } = req.params;
+    const db = readDb();
+    
+    const workerIndex = db.workers.findIndex((w: any) => w.id === id);
+    if (workerIndex === -1) return res.status(404).json({ message: "Worker not found" });
+
+    // Verify ownership
+    if (db.workers[workerIndex].createdBy !== (req as any).user.id && (req as any).user.role !== 'owner') {
+      return res.status(403).json({ message: "Not authorized to delete" });
+    }
+
+    db.workers = db.workers.filter((w: any) => w.id !== id);
+    // Also cleanup attendance
+    db.attendance = db.attendance.filter((a: any) => a.workerId !== id);
+    
+    writeDb(db);
+    res.json({ message: "Worker deleted" });
+  });
+
   app.post("/api/workers", authenticateToken, (req, res) => {
-    console.log("Worker creation request:", req.body);
-    const { name, phone, role, address } = req.body;
+    console.log("Worker creation request:", { ...req.body, photo: req.body.photo ? 'present' : 'absent' });
+    const { name, phone, role, address, photo } = req.body;
     const db = readDb();
     const newWorker = {
       id: Date.now().toString(),
       name,
       phone,
+      photo,
       role,
       address,
       createdBy: (req as any).user.id,
@@ -172,7 +234,7 @@ async function startServer() {
   });
 
   app.post("/api/attendance", authenticateToken, (req, res) => {
-    const { date, records } = req.body; // records: [{ workerId, status }]
+    const { date, records } = req.body; // records: [{ workerId, status, capturePhoto }]
     const db = readDb();
     
     // Remove existing records for this date to support updates
@@ -183,13 +245,23 @@ async function startServer() {
       workerId: r.workerId,
       date,
       status: r.status,
-      markedBy: req.user.id,
+      capturePhoto: r.capturePhoto,
+      markedBy: (req as any).user.id,
       updatedAt: new Date().toISOString()
     }));
 
     db.attendance.push(...newRecords);
     writeDb(db);
     res.json({ message: "Attendance saved", count: newRecords.length });
+  });
+
+  // Settings
+  app.get("/api/settings", authenticateToken, (req, res) => {
+    if ((req as any).user.role !== 'owner') {
+      return res.status(403).json({ message: "Only owners can access settings" });
+    }
+    const db = readDb();
+    res.json(db.settings || initialDb.settings);
   });
 
   // --- Vite / Static Assets ---

@@ -1,6 +1,6 @@
 {
   "name": "Attendance Tracker",
   "description": "A mobile-first labour attendance tracking system for owners and team leaders featuring real-time dashboards and history.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": []
 }

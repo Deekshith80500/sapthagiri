@@ -13,6 +13,7 @@ export interface Worker {
   id: string;
   name: string;
   phone?: string;
+  photo?: string;
   role: string;
   address?: string;
   createdBy: string;
@@ -24,6 +25,7 @@ export interface AttendanceRecord {
   workerId: string;
   date: string;
   status: 'present' | 'absent';
+  capturePhoto?: string;
   markedBy: string;
   updatedAt: string;
 }
