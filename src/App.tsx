@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Calendar, History, LogOut, Plus, Menu, X, ChevronRight, Check, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, History, LogOut, Plus, Menu, X, ChevronRight, Check, Zap, User as UserIcon, Settings as SettingsIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User } from './types';
 import Login from './pages/Login';
@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Attendance from './pages/Attendance';
 import HistoryPage from './pages/History';
 import Workers from './pages/Workers';
+import Settings from './pages/Settings';
 
 // --- Auth Context ---
 interface AuthContextType {
@@ -68,6 +69,7 @@ function App() {
             <Route path="attendance" element={<Attendance />} />
             <Route path="workers" element={<Workers />} />
             <Route path="history" element={<HistoryPage />} />
+            <Route path="settings" element={user?.role === 'owner' ? <Settings /> : <Navigate to="/" />} />
           </Route>
         </Routes>
       </BrowserRouter>
@@ -86,22 +88,34 @@ function Layout() {
     { label: 'Attendance', icon: Calendar, path: '/attendance', roles: ['owner', 'leader'] },
     { label: 'Workers', icon: Users, path: '/workers', roles: ['owner', 'leader'] },
     { label: 'History', icon: History, path: '/history', roles: ['owner', 'leader'] },
+    { label: 'Settings', icon: SettingsIcon, path: '/settings', roles: ['owner'] },
   ];
 
   const filteredNav = navItems.filter(item => item.roles.includes(user?.role || ''));
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
+      {/* Floating Electricity Symbols */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-[0.03]">
+        <motion.div animate={{ y: [0, -100, 0], x: [0, 50, 0], rotate: [0, 360] }} transition={{ duration: 20, repeat: Infinity }} className="absolute top-1/4 left-1/4 text-electric"><Zap size={200} fill="currentColor" /></motion.div>
+        <motion.div animate={{ y: [0, 100, 0], x: [0, -50, 0], rotate: [360, 0] }} transition={{ duration: 25, repeat: Infinity }} className="absolute bottom-1/4 right-1/4 text-electric"><Zap size={300} fill="currentColor" /></motion.div>
+      </div>
+
       {/* Mobile Header */}
-      <header className="bg-white border-b border-gray-100 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight text-brand">Attendance</h1>
-        <button onClick={() => setIsMenuOpen(true)} className="p-2 -mr-2">
+      <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-electric rounded-lg flex items-center justify-center text-slate-800 shadow-sm shadow-electric/20 animate-zap">
+            <Zap size={16} strokeWidth={3} fill="currentColor" />
+          </div>
+          <h1 className="text-xl font-black tracking-tighter text-slate-800 uppercase">Power<span className="text-brand">Hub</span></h1>
+        </div>
+        <button onClick={() => setIsMenuOpen(true)} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-500 hover:text-brand transition-colors">
           <Menu size={24} />
         </button>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-24">
+      <main className="flex-1 pb-24 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -116,13 +130,14 @@ function Layout() {
               <Route path="attendance" element={<Attendance />} />
               <Route path="workers" element={<Workers />} />
               <Route path="history" element={<HistoryPage />} />
+              <Route path="settings" element={<Settings />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
       </main>
 
       {/* Bottom Nav for Mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center px-4 py-3 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 flex justify-around items-center px-4 py-2 z-40 h-[72px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
         {filteredNav.map(item => {
           const isActive = location.pathname === item.path || (item.path === '/' && location.pathname === '/');
           const Icon = item.icon;
@@ -130,10 +145,16 @@ function Layout() {
             <Link 
               key={item.path} 
               to={item.path}
-              className={`flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-brand' : 'text-gray-400'}`}
+              className={`flex flex-col items-center justify-center gap-1 w-16 h-16 rounded-2xl transition-all ${
+                isActive ? 'text-brand scale-110' : 'text-slate-400'
+              }`}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium uppercase tracking-wider">{item.label}</span>
+              <div className={`p-2.5 rounded-xl transition-all ${isActive ? 'bg-brand-light shadow-inner' : ''}`}>
+                <Icon size={22} strokeWidth={isActive ? 3 : 2} />
+              </div>
+              <span className={`text-[9px] font-black uppercase tracking-tighter transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                {item.label}
+              </span>
             </Link>
           );
         })}
@@ -164,28 +185,43 @@ function Layout() {
                 <X size={24} />
               </button>
 
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                  <UserIcon size={24} className="text-gray-400" />
+              <div className="flex items-center gap-4 mb-10 bg-slate-900 p-6 rounded-[32px] border-4 border-electric/20 shadow-2xl shadow-electric/10 relative overflow-hidden">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-electric/20 rounded-full blur-2xl" />
+                <div className="w-14 h-14 bg-electric text-slate-900 rounded-[20px] flex items-center justify-center shadow-lg shadow-electric/40 relative z-10">
+                  <UserIcon size={28} strokeWidth={3} />
                 </div>
-                <div>
-                  <h2 className="font-bold text-lg">{user?.name}</h2>
-                  <p className="text-sm text-gray-500 capitalize">{user?.role}</p>
+                <div className="relative z-10">
+                  <h2 className="font-black text-white text-lg tracking-tight leading-none mb-1">{user?.name}</h2>
+                  <div className="flex items-center gap-1.5 font-black text-electric uppercase tracking-widest text-[9px]">
+                    <Zap size={10} fill="currentColor" className="animate-zap" />
+                    {user?.role}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex-1 space-y-2">
-                {filteredNav.map(item => (
-                  <Link 
-                    key={item.path} 
-                    to={item.path} 
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="font-medium">{item.label}</span>
-                    <ChevronRight size={18} className="text-gray-300" />
-                  </Link>
-                ))}
+              <div className="flex-1 space-y-3">
+                {filteredNav.map(item => {
+                   const isActive = location.pathname === item.path || (item.path === '/' && location.pathname === '/');
+                   const Icon = item.icon;
+                   return (
+                    <Link 
+                      key={item.path} 
+                      to={item.path} 
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center gap-4 p-4 rounded-[24px] transition-all ${
+                        isActive 
+                          ? 'bg-brand text-white shadow-xl shadow-brand/30 ring-4 ring-brand/10' 
+                          : 'text-slate-600 hover:bg-brand-light hover:text-brand'
+                      }`}
+                    >
+                      <div className={`p-2 rounded-xl ${isActive ? 'bg-white/20' : 'bg-slate-50'}`}>
+                        <Icon size={20} strokeWidth={isActive ? 3 : 2} />
+                      </div>
+                      <span className="font-black text-sm uppercase tracking-wide">{item.label}</span>
+                      {isActive && <motion.div layoutId="activeInd" className="ml-auto w-2 h-2 bg-white rounded-full shadow-sm" />}
+                    </Link>
+                   );
+                })}
               </div>
 
               <button 

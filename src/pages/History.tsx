@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Download, Users, ChevronLeft, ChevronRight, Sparkles, User, X, Camera } from 'lucide-react';
+import { Calendar, Download, Users, ChevronLeft, ChevronRight, Zap, User, X, Camera, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Worker, AttendanceRecord } from '../types';
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isSameDay, parseISO } from 'date-fns';
@@ -100,10 +100,11 @@ export default function History() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight mb-1 flex items-center gap-2">
-            History <Sparkles size={20} className="text-brand animate-bounce" />
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2 leading-none">
+            Grid <span className="text-brand">Logs</span>
+            <Zap size={24} className="text-electric animate-zap" fill="currentColor" />
           </h2>
-          <p className="text-gray-500">Traditional Register Grid View</p>
+          <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mt-1">High-Voltage Attendance Grid</p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -117,60 +118,67 @@ export default function History() {
       </div>
 
       {/* Month Selector */}
-      <div className="card !p-2 flex items-center justify-between bg-white/50 backdrop-blur-xl border-brand/10">
-        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-          <ChevronLeft size={20} className="text-gray-400" />
+      <div className="card !p-3 flex items-center justify-between bg-white border-2 border-brand/5 shadow-xl shadow-brand/5">
+        <button onClick={prevMonth} className="w-12 h-12 bg-slate-50 hover:bg-brand-light hover:text-brand rounded-2xl flex items-center justify-center transition-all">
+          <ChevronLeft size={24} className="text-slate-400 group-hover:text-brand" />
         </button>
-        <span className="font-bold text-lg text-gray-800">{format(currentMonth, 'MMMM yyyy')}</span>
-        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-          <ChevronRight size={20} className="text-gray-400" />
+        <div className="text-center group cursor-pointer">
+          <p className="text-[10px] font-black uppercase text-brand tracking-[0.3em] mb-1">Select Period</p>
+          <span className="font-black text-2xl text-slate-800 tracking-tight">{format(currentMonth, 'MMMM yyyy')}</span>
+        </div>
+        <button onClick={nextMonth} className="w-12 h-12 bg-slate-50 hover:bg-brand-light hover:text-brand rounded-2xl flex items-center justify-center transition-all">
+          <ChevronRight size={24} className="text-slate-400 group-hover:text-brand" />
         </button>
       </div>
 
       {/* Register Grid */}
-      <div className="card p-0 overflow-hidden border-brand/10 shadow-xl shadow-brand/5 group relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="card p-0 overflow-hidden border-2 border-brand/5 shadow-2xl shadow-brand/10 group relative bg-white/80 backdrop-blur-md">
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-brand/5 rounded-full blur-3xl pointer-events-none" />
         
-        <div className="overflow-x-auto custom-scrollbar">
+        <div className="overflow-x-auto custom-scrollbar relative z-10">
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
-              <tr className="bg-gray-50/50">
-                <th className="sticky left-0 bg-gray-50/90 backdrop-blur-md px-6 py-4 font-bold text-[11px] uppercase tracking-wider text-gray-500 border-b border-r border-gray-100 z-20 w-48 shadow-[2px_0_5px_rgba(0,0,0,0.01)]">
-                  Worker Name
+              <tr className="bg-slate-50/80">
+                <th className="sticky left-0 bg-white/95 backdrop-blur-md px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] text-slate-400 border-b-2 border-r-2 border-slate-50 z-20 w-56">
+                  Personnel / Day
                 </th>
                 {daysInMonth.map(day => (
-                  <th key={day.toString()} className="px-1 py-4 text-center border-b border-gray-100 min-w-[35px]">
-                    <div className="text-[9px] uppercase font-bold text-gray-400 tracking-tighter mix-blend-multiply">
+                  <th key={day.toString()} className="px-1 py-5 text-center border-b-2 border-slate-50 min-w-[40px]">
+                    <div className="text-[9px] uppercase font-black text-slate-300 tracking-tight mb-1">
                       {format(day, 'EEE')}
                     </div>
-                    <div className="text-[13px] font-black text-gray-700">
+                    <div className="text-[14px] font-black text-slate-600">
                       {format(day, 'dd')}
                     </div>
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-50">
               {workers.map((worker, idx) => (
                 <motion.tr 
                   key={worker.id}
-                  initial={{ opacity: 0, x: -5 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.03 }}
-                  className="hover:bg-brand/[0.03] transition-colors group/row"
+                  transition={{ delay: idx * 0.02 }}
+                  className="hover:bg-brand/[0.02] transition-colors group/row"
                 >
-                  <td className="sticky left-0 bg-white/95 backdrop-blur-md px-6 py-4 font-bold text-sm border-b border-r border-gray-100 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)] group-hover/row:bg-brand/[0.03] transition-colors">
-                    <div className="flex items-center gap-3">
-                      {worker.photo ? (
-                        <img src={worker.photo} alt="" className="w-8 h-8 rounded-lg object-cover border border-gray-100" />
-                      ) : (
-                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300">
-                          <User size={14} />
-                        </div>
-                      )}
-                      <div>
-                        <span className="text-gray-800 line-clamp-1">{worker.name}</span>
-                        <p className="text-[9px] text-gray-400 uppercase font-normal tracking-wide">{worker.role}</p>
+                  <td className="sticky left-0 bg-white/95 backdrop-blur-md px-8 py-4 z-10 border-r-2 border-slate-50 group-hover/row:bg-brand/5 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="relative group/photo">
+                        {worker.photo ? (
+                          <img src={worker.photo} alt="" className="w-10 h-10 rounded-xl object-cover border-2 border-brand/10 shadow-sm transition-transform group-hover/photo:scale-110" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-brand-light flex items-center justify-center text-brand">
+                            <User size={18} strokeWidth={2.5} />
+                          </div>
+                        )}
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white shadow-sm" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-slate-800 font-black text-sm block truncate tracking-tight">{worker.name}</span>
+                        <p className="text-[9px] text-brand font-black uppercase tracking-widest">{worker.role}</p>
                       </div>
                     </div>
                   </td>
@@ -184,11 +192,11 @@ export default function History() {
                               initial={{ scale: 0, rotate: -45 }}
                               animate={{ scale: 1, rotate: 0 }}
                               onClick={() => record.capturePhoto && setSelectedProof({ record, workerName: worker.name })}
-                              className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black shadow-sm ${
+                              className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black shadow-sm transition-all ${
                                 record.status === 'present' 
-                                  ? 'bg-green-100/80 text-green-700 border border-green-200' 
-                                  : 'bg-red-100/80 text-red-700 border border-red-200'
-                              } ${record.capturePhoto ? 'cursor-pointer hover:scale-110 active:scale-95 transition-transform' : ''}`}
+                                  ? 'bg-emerald-500 text-white shadow-emerald-500/30' 
+                                  : 'bg-rose-500 text-white shadow-rose-500/30'
+                              } ${record.capturePhoto ? 'cursor-pointer hover:scale-110 active:scale-95' : ''}`}
                             >
                               {record.status === 'present' ? 'P' : 'A'}
                             </motion.div>
@@ -215,20 +223,41 @@ export default function History() {
       )}
 
       {/* Legend & Stats */}
-      <div className="flex flex-wrap items-center gap-6 p-6 rounded-3xl bg-white border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-6 text-sm text-gray-600 border-r border-gray-100 pr-6">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-green-100 border border-green-200 flex items-center justify-center text-[9px] font-black text-green-700">P</div>
-            <span className="font-medium">Present</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-red-100 border border-red-200 flex items-center justify-center text-[9px] font-black text-red-700">A</div>
-            <span className="font-medium">Absent</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="card bg-emerald-500 text-white p-6 border-none shadow-xl shadow-emerald-500/20 hover:scale-[1.02] transition-transform">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+              <Check size={24} strokeWidth={3} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Present</p>
+              <p className="text-3xl font-black">{attendance.filter(a => parseISO(a.date).getMonth() === currentMonth.getMonth() && a.status === 'present').length}</p>
+            </div>
           </div>
         </div>
         
-        <div className="flex flex-1 items-center gap-4 text-[11px] text-gray-400 font-bold uppercase tracking-widest overflow-x-auto whitespace-nowrap">
-          <Calendar size={14} /> Total marked days this month: {new Set(attendance.filter(a => parseISO(a.date).getMonth() === currentMonth.getMonth()).map(a => a.date)).size}
+        <div className="card bg-rose-500 text-white p-6 border-none shadow-xl shadow-rose-500/20 hover:scale-[1.02] transition-transform">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+              <X size={24} strokeWidth={3} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absent</p>
+              <p className="text-3xl font-black">{attendance.filter(a => parseISO(a.date).getMonth() === currentMonth.getMonth() && a.status === 'absent').length}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-brand text-white p-6 border-none shadow-xl shadow-brand/20 hover:scale-[1.02] transition-transform">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+              <Calendar size={24} strokeWidth={3} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Days Active</p>
+              <p className="text-3xl font-black">{new Set(attendance.filter(a => parseISO(a.date).getMonth() === currentMonth.getMonth()).map(a => a.date)).size}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -246,32 +275,38 @@ export default function History() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="fixed inset-4 max-w-sm mx-auto h-fit bg-white rounded-3xl overflow-hidden z-[110] shadow-2xl"
+              className="fixed inset-4 max-w-sm mx-auto h-fit bg-white rounded-[40px] overflow-hidden z-[110] shadow-2xl border-4 border-white"
             >
-              <div className="bg-brand p-4 text-white flex items-center justify-between">
+              <div className="bg-gradient-to-r from-brand to-brand-dark p-6 text-white flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold">{selectedProof.workerName}</h4>
-                  <p className="text-[10px] opacity-80 uppercase tracking-widest">{format(parseISO(selectedProof.record.date), 'EEEE, MMMM dd')}</p>
+                  <h4 className="text-xl font-black tracking-tight">{selectedProof.workerName}</h4>
+                  <p className="text-[10px] font-black opacity-80 uppercase tracking-widest leading-none mt-1">{format(parseISO(selectedProof.record.date), 'EEEE, MMMM dd')}</p>
                 </div>
-                <button onClick={() => setSelectedProof(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
-                  <X size={20} />
+                <button onClick={() => setSelectedProof(null)} className="w-10 h-10 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-all">
+                  <X size={20} strokeWidth={3} />
                 </button>
               </div>
-              <div className="aspect-square bg-gray-900 relative">
+              <div className="aspect-square bg-slate-900 relative">
                 <img 
                   src={selectedProof.record.capturePhoto} 
                   alt="Attendance proof" 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="text-white text-[10px] font-bold flex items-center gap-2">
-                    <Camera size={12} className="text-brand" />
-                    LIVE PHOTO PROOF CAPTURED
-                  </p>
+                <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-slate-950 to-transparent">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/20">
+                    <Check size={12} strokeWidth={4} className="text-white" />
+                    <span className="text-white text-[9px] font-black uppercase tracking-widest underline decoration-white/30 decoration-2 underline-offset-2">Verified Identity</span>
+                  </div>
                 </div>
               </div>
-              <div className="p-4 text-center">
-                <p className="text-xs text-gray-400">Time Captured: {format(parseISO(selectedProof.record.updatedAt), 'hh:mm a')}</p>
+              <div className="p-6 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Timestamp</p>
+                  <p className="text-xs font-black text-slate-600">{format(parseISO(selectedProof.record.updatedAt), 'hh:mm:ss a')}</p>
+                </div>
+                <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-brand">
+                  <Camera size={18} strokeWidth={3} />
+                </div>
               </div>
             </motion.div>
           </>

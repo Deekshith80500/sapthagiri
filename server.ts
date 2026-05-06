@@ -59,16 +59,19 @@ async function startServer() {
     });
   };
 
+  // Helper to normalize names for comparison (removes all whitespace and lowercase)
+  const normalizeName = (name: string) => name ? name.replace(/\s+/g, "").toLowerCase() : "";
+
   // Register
   app.post("/api/auth/register", (req, res) => {
-    const { email, password, name, role, degree, address, inviteCode } = req.body;
-    console.log(`Register attempt for: ${email}`);
+    const { name, role, degree, address, inviteCode, email, phone } = req.body;
+    console.log(`Register attempt for: ${name}`);
     const db = readDb();
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedName = normalizeName(name);
     
-    if (db.users.find((u: any) => u.email.trim().toLowerCase() === normalizedEmail)) {
+    if (db.users.find((u: any) => normalizeName(u.name) === normalizedName)) {
       console.log("Registration failed: User exists");
-      return res.status(400).json({ message: "An account with this email already exists. Please log in instead." });
+      return res.status(400).json({ message: "An account with this name already exists. Please log in instead." });
     }
 
     // Verify invite code for team leaders
@@ -81,19 +84,19 @@ async function startServer() {
 
     const newUser = {
       id: Date.now().toString(),
-      email: normalizedEmail,
-      password: password.trim(), // In a real app, hash this!
-      name,
+      name: name.trim(),
+      phone: phone || "",
+      email: email || "",
       role, // 'owner' | 'leader'
-      degree,
-      address,
+      degree: degree || "",
+      address: address || "",
       createdAt: new Date().toISOString()
     };
 
     db.users.push(newUser);
     writeDb(db);
 
-    const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, JWT_SECRET);
+    const token = jwt.sign({ id: newUser.id, name: newUser.name, role: newUser.role }, JWT_SECRET);
     res.cookie("token", token, { 
       httpOnly: true, 
       secure: true, 
@@ -101,37 +104,45 @@ async function startServer() {
       maxAge: 3600000 * 24 
     });
     console.log("Registration success:", newUser.id);
-    res.json({ user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role } });
+    res.json({ user: { id: newUser.id, name: newUser.name, role: newUser.role } });
   });
 
   // Login
   app.post("/api/auth/login", (req, res) => {
-    const { email, password } = req.body;
-    console.log(`Login attempt for: ${email}`);
+    const { name, accessCode, intendedRole } = req.body;
+    console.log(`Login attempt for: ${name} as ${intendedRole}`);
     const db = readDb();
-    const normalizedEmail = email.trim().toLowerCase();
     
     if (db.users.length === 0) {
       return res.status(401).json({ message: "No accounts found in system. Please register first." });
     }
 
-    const userByEmail = db.users.find((u: any) => 
-      u.email.trim().toLowerCase() === normalizedEmail
-    );
+    const normalizedName = normalizeName(name);
+    const userByName = db.users.find((u: any) => normalizeName(u.name) === normalizedName);
 
-    if (!userByEmail) {
-      console.log(`Login failed: User not found for email ${normalizedEmail}`);
-      return res.status(401).json({ message: "No account found with this email. Please register first." });
+    if (!userByName) {
+      console.log(`Login failed: User not found for name ${name}`);
+      return res.status(401).json({ message: `No account found with name "${name}". Please register first.` });
     }
 
-    if (userByEmail.password !== password.trim()) {
-      console.log(`Login failed: Incorrect password for email ${normalizedEmail}`);
-      return res.status(401).json({ message: "Incorrect password. Please try again." });
+    // Verify role matches selection
+    if (intendedRole && userByName.role !== intendedRole) {
+      console.log(`Login failed: Role mismatch for ${name}. Expected ${intendedRole}, found ${userByName.role}`);
+      return res.status(401).json({ message: `This account is registered as a ${userByName.role}. Please select the correct login option.` });
     }
 
-    const user = userByEmail;
+    // Check access code for team leaders
+    if (userByName.role === 'leader') {
+      const settings = db.settings || { leaderInviteCode: "SITE777" };
+      if (accessCode !== settings.leaderInviteCode) {
+        console.log(`Login failed: Invalid access code for leader ${name}`);
+        return res.status(401).json({ message: "Invalid leader access code. Please contact the owner." });
+      }
+    }
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET);
+    const user = userByName;
+
+    const token = jwt.sign({ id: user.id, name: user.name, role: user.role }, JWT_SECRET);
     res.cookie("token", token, { 
       httpOnly: true, 
       secure: true, 
@@ -139,7 +150,7 @@ async function startServer() {
       maxAge: 3600000 * 24 
     });
     console.log("Login success:", user.id);
-    res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({ user: { id: user.id, name: user.name, role: user.role } });
   });
 
   // Logout
@@ -162,7 +173,7 @@ async function startServer() {
       const db = readDb();
       const user = db.users.find(u => u.id === (decoded as any).id);
       if (!user) return res.json({ user: null });
-      res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+      res.json({ user: { id: user.id, name: user.name, role: user.role, email: user.email, phone: user.phone } });
     });
   });
 
@@ -277,6 +288,20 @@ async function startServer() {
     }
     const db = readDb();
     res.json(db.settings || initialDb.settings);
+  });
+
+  app.post("/api/settings", authenticateToken, (req, res) => {
+    if ((req as any).user.role !== 'owner') {
+      return res.status(403).json({ message: "Only owners can update settings" });
+    }
+    const { leaderInviteCode } = req.body;
+    const db = readDb();
+    db.settings = {
+      ...db.settings,
+      leaderInviteCode: leaderInviteCode.trim()
+    };
+    writeDb(db);
+    res.json(db.settings);
   });
 
   // --- Vite / Static Assets ---

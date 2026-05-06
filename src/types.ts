@@ -2,11 +2,13 @@ export type UserRole = 'owner' | 'leader';
 
 export interface User {
   id: string;
-  email: string;
   name: string;
   role: UserRole;
+  phone?: string;
+  email?: string;
   degree?: string;
   address?: string;
+  createdAt?: string;
 }
 
 export interface Worker {

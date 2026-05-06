@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, X, Calendar, Search, Camera } from 'lucide-react';
+import { Check, X, Calendar, Search, Camera, User, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Worker, AttendanceRecord } from '../types';
 import { format } from 'date-fns';
@@ -117,16 +117,22 @@ export default function Attendance() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight mb-1">Attendance</h2>
-          <p className="text-gray-500">{format(new Date(), 'MMMM d, yyyy')}</p>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+            Grid <span className="text-brand">RollCall</span>
+            <Zap size={24} className="text-electric animate-zap" fill="currentColor" />
+          </h2>
+          <div className="flex items-center gap-2 text-slate-400">
+            <Calendar size={14} className="text-brand" />
+            <span className="text-[10px] font-black uppercase tracking-widest leading-none">{format(new Date(), 'EEEE, MMMM dd')}</span>
+          </div>
         </div>
         <button 
           onClick={handleMarkAllPresent}
-          className="px-4 py-2 bg-green-50 text-green-700 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-green-100 transition-colors"
+          className="px-5 py-3 bg-slate-900 text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 hover:bg-electric hover:text-slate-900 transition-all shadow-xl shadow-slate-900/10 active:scale-95 group"
         >
-          <Check size={14} />
-          Mark All Present
+          <Zap size={14} className="group-hover:animate-zap" fill="currentColor" />
+          Mark All
         </button>
       </div>
 
@@ -143,31 +149,47 @@ export default function Attendance() {
       </div>
 
       {/* Worker List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filteredWorkers.map((worker) => (
-          <div key={worker.id} className="card p-4 flex items-center justify-between group overflow-hidden">
+          <motion.div 
+            key={worker.id} 
+            layout
+            className={`card p-4 flex items-center justify-between group overflow-hidden border-2 transition-all duration-300 ${
+              marks[worker.id] === 'present' 
+                ? 'border-emerald-500/20 bg-emerald-50/30 shadow-emerald-500/5' 
+                : marks[worker.id] === 'absent' 
+                ? 'border-rose-500/20 bg-rose-50/30 shadow-rose-500/5' 
+                : 'border-slate-50 shadow-sm'
+            }`}
+          >
             <div className="flex items-center gap-4">
               <div className="relative">
                 {worker.photo ? (
-                  <img src={worker.photo} alt={worker.name} className="w-12 h-12 rounded-full object-cover border-2 border-brand/10 shadow-sm" />
+                  <img src={worker.photo} alt={worker.name} className={`w-14 h-14 rounded-2xl object-cover border-2 transition-all ${marks[worker.id] === 'present' ? 'border-emerald-500 shadow-lg shadow-emerald-500/20' : marks[worker.id] === 'absent' ? 'border-rose-500 shadow-lg shadow-rose-500/20' : 'border-white shadow-sm'}`} />
                 ) : (
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                    <Calendar size={24} />
+                  <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
+                    <User size={28} />
                   </div>
                 )}
                 {capturePhotos[worker.id] && (
                   <motion.div 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -right-1 -top-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center text-white"
+                    className="absolute -right-2 -top-2 w-7 h-7 bg-emerald-500 rounded-xl border-4 border-white flex items-center justify-center text-white shadow-xl"
                   >
-                    <Camera size={10} strokeWidth={4} />
+                    <Camera size={12} strokeWidth={3} />
                   </motion.div>
                 )}
               </div>
               <div>
-                <p className="font-bold text-gray-800">{worker.name}</p>
-                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{worker.role}</p>
+                <p className={`font-black text-lg tracking-tight ${marks[worker.id] ? 'text-slate-800' : 'text-slate-600'}`}>{worker.name}</p>
+                <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full ${
+                  marks[worker.id] === 'present' ? 'bg-emerald-500/10 text-emerald-600' : 
+                  marks[worker.id] === 'absent' ? 'bg-rose-500/10 text-rose-600' : 
+                  'bg-slate-100 text-slate-400'
+                }`}>
+                  {worker.role}
+                </span>
               </div>
             </div>
             
@@ -176,46 +198,45 @@ export default function Attendance() {
                 onClick={() => handleToggle(worker.id, 'present')}
                 className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all relative overflow-hidden ${
                   marks[worker.id] === 'present' 
-                    ? 'bg-green-500 text-white shadow-lg shadow-green-100' 
-                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                    ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/30 ring-2 ring-emerald-500 ring-offset-2' 
+                    : 'bg-slate-100 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500'
                 }`}
               >
                 {marks[worker.id] === 'present' && capturePhotos[worker.id] ? (
-                  <img src={capturePhotos[worker.id]} className="absolute inset-0 w-full h-full object-cover opacity-30" alt="Captured" />
+                  <img src={capturePhotos[worker.id]} className="absolute inset-0 w-full h-full object-cover opacity-40 blur-[1px]" alt="Captured" />
                 ) : null}
-                <Check size={20} strokeWidth={3} className="relative z-10" />
+                <Check size={24} strokeWidth={4} className="relative z-10" />
               </button>
               <button
                 onClick={() => handleToggle(worker.id, 'absent')}
                 className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                   marks[worker.id] === 'absent' 
-                    ? 'bg-red-500 text-white shadow-lg shadow-red-100' 
-                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                    ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/30 ring-2 ring-rose-500 ring-offset-2' 
+                    : 'bg-slate-100 text-slate-400 hover:bg-rose-50 hover:text-rose-500'
                 }`}
               >
-                <X size={20} strokeWidth={3} />
+                <X size={24} strokeWidth={4} />
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Action Bar */}
-      <div className="sticky bottom-24 bg-white/80 backdrop-blur-md p-4 -mx-6 mb-[-24px] border-t border-gray-100 flex items-center justify-between gap-4">
-        <div className="text-sm font-medium">
-          <span className="text-green-600">{Object.values(marks).filter(m => m === 'present').length} Present</span>
-          <span className="mx-2 text-gray-300">|</span>
-          <span className="text-red-600">{Object.values(marks).filter(m => m === 'absent').length} Absent</span>
+      <div className="sticky bottom-24 bg-white/90 backdrop-blur-xl p-6 -mx-6 mb-[-24px] border-t border-slate-100 flex items-center justify-between gap-4 shadow-2xl shadow-slate-900/10">
+        <div className="text-sm font-black flex gap-4">
+          <span className="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">{Object.values(marks).filter(m => m === 'present').length} Present</span>
+          <span className="text-rose-600 bg-rose-50 px-3 py-1 rounded-lg">{Object.values(marks).filter(m => m === 'absent').length} Absent</span>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`btn-primary px-8 flex items-center gap-2 ${
-            saveStatus === 'success' ? 'bg-green-600' : ''
+          className={`btn-primary px-10 flex items-center gap-2 text-sm font-black uppercase tracking-widest ${
+            saveStatus === 'success' ? 'bg-emerald-600 shadow-emerald-500/40' : ''
           }`}
         >
-          {saving ? 'Saving...' : saveStatus === 'success' ? 'Saved!' : 'Save Marks'}
-          {saveStatus === 'success' && <Check size={18} />}
+          {saving ? 'Saving...' : saveStatus === 'success' ? 'Marks Saved!' : 'Commit Marks'}
+          {saveStatus === 'success' && <Check size={18} strokeWidth={3} />}
         </button>
       </div>
 

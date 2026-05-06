@@ -3,6 +3,7 @@
     {
       "id": "1777998737222",
       "email": "deekshithyv24@gmail.com",
+      "phone": "8050050287",
       "password": "Deekshith@123",
       "name": "Deekshith Y V",
       "role": "owner",
@@ -13,12 +14,24 @@
     {
       "id": "1777998737223",
       "email": "anvitha123@gmail.com",
+      "phone": "9988776655",
       "password": "Password@123",
       "name": "Anvitha",
       "role": "owner",
       "degree": "B.Tech",
       "address": "Bangalore",
       "createdAt": "2026-05-05T16:44:00.000Z"
+    },
+    {
+      "id": "1777998737224",
+      "email": "shivanna123@gmail.com",
+      "phone": "9900881122",
+      "password": "password123",
+      "name": "Shivanna",
+      "role": "leader",
+      "degree": "SSLC",
+      "address": "Bangalore",
+      "createdAt": "2026-05-06T15:38:00.000Z"
     }
   ],
   "workers": [

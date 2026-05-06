@@ -1,15 +1,15 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
-import { User, Mail, Lock, GraduationCap, MapPin, Briefcase } from 'lucide-react';
+import { User, Phone, Mail, Lock, GraduationCap, MapPin, Briefcase } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Register() {
   const [role, setRole] = useState<'owner' | 'leader'>('owner');
   const [formData, setFormData] = useState({
     name: '',
+    phone: '',
     email: '',
-    password: '',
     degree: '',
     address: '',
     inviteCode: ''
@@ -30,7 +30,6 @@ export default function Register() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           ...formData, 
-          email: formData.email.trim(),
           role 
         }),
         credentials: 'include',
@@ -51,11 +50,19 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-8 bg-surface">
+    <div className="min-h-screen py-12 px-8 relative overflow-hidden bg-brand-light">
+      {/* Background Image of electrical pole worker */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=2070&auto=format&fit=crop")' }}
+      />
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-brand/40 via-brand-dark/20 to-brand-dark/60 mix-blend-multiply" />
+      <div className="absolute inset-0 z-0 backdrop-blur-[2px]" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md mx-auto"
+        className="max-w-md mx-auto relative z-10 bg-white/80 backdrop-blur-xl p-8 rounded-[40px] shadow-2xl border border-white/50"
       >
         <div className="mb-10">
           <h1 className="text-4xl font-bold tracking-tight mb-2">Create Account</h1>
@@ -98,26 +105,24 @@ export default function Register() {
           </div>
 
           <div className="relative group">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
+            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
-              type="email"
-              placeholder="Email address"
+              type="tel"
+              placeholder="Phone Number (Optional)"
               className="input-field !pl-12"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             />
           </div>
 
           <div className="relative group">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
             <input
-              type="password"
-              placeholder="Password"
+              type="email"
+              placeholder="Email address (Optional)"
               className="input-field !pl-12"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
 

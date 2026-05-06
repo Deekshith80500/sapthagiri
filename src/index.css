@@ -3,31 +3,57 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-brand: #4a4a4a;
-  --color-surface: #f5f5f5;
+  --color-brand: #3b82f6;
+  --color-brand-dark: #1d4ed8;
+  --color-brand-light: #eff6ff;
+  --color-surface: #f8fafc;
+  --color-accent-orange: #f97316;
+  --color-accent-green: #22c55e;
+  --color-accent-purple: #8b5cf6;
+  --color-electric: #fbbf24;
+  --color-electric-glow: rgba(251, 191, 36, 0.5);
+}
+
+@layer utilities {
+  .electric-glow {
+    box-shadow: 0 0 15px var(--color-electric-glow);
+  }
+}
+
+@keyframes zap-blink {
+  0%, 10%, 20%, 100% { opacity: 1; filter: drop-shadow(0 0 8px #fbbf24); }
+  5%, 15% { opacity: 0.4; filter: none; }
+}
+
+.animate-zap {
+  animation: zap-blink 3s infinite;
 }
 
 @layer base {
   body {
-    @apply bg-surface text-brand font-sans antialiased;
+    @apply bg-surface text-slate-900 font-sans antialiased;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
+.gradient-brand {
+  @apply bg-gradient-to-br from-brand to-brand-dark;
+}
+
 .card {
-  @apply bg-white rounded-3xl shadow-xs border border-gray-100 p-6;
+  @apply bg-white rounded-3xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-shadow;
 }
 
 .btn-primary {
-  @apply bg-brand text-white font-medium py-3 px-6 rounded-2xl hover:opacity-90 transition-opacity active:scale-[0.98] disabled:opacity-50;
+  @apply bg-brand text-white font-semibold py-3 px-6 rounded-2xl hover:bg-brand-dark transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm hover:shadow-brand/25;
 }
 
 .btn-secondary {
-  @apply bg-white border border-gray-200 text-brand font-medium py-3 px-6 rounded-2xl hover:bg-gray-50 transition-colors active:scale-[0.98];
+  @apply bg-white border border-slate-200 text-slate-600 font-medium py-3 px-6 rounded-2xl hover:bg-slate-50 transition-all active:scale-[0.98];
 }
 
 .input-field {
-  @apply w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all;
+  @apply w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all text-slate-900 placeholder:text-slate-400;
 }
 
 /* Custom switch/toggle mobile style */
