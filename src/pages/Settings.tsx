@@ -49,27 +49,26 @@ export default function Settings() {
     <div className="space-y-8">
       <div className="mb-10 flex items-center justify-between">
         <div>
-          <h2 className="text-4xl font-black text-slate-800 tracking-tight">Grid Config</h2>
-          <p className="text-[10px] font-black uppercase text-brand tracking-[0.3em] mt-1">Central Distribution Controls</p>
+          <h2 className="text-4xl font-black text-white tracking-tight leading-none mb-1">Grid Config</h2>
+          <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] mt-1">Central Distribution Controls</p>
         </div>
-        <div className="w-16 h-16 bg-electric rounded-[24px] flex items-center justify-center text-slate-800 shadow-2xl shadow-electric/20 animate-zap">
+        <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[28px] flex items-center justify-center text-electric shadow-2xl shadow-slate-900/40 animate-zap backdrop-blur-xl">
           <Zap size={32} fill="currentColor" />
         </div>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Leader Access Security */}
-        <div className="card p-8 space-y-6 border-slate-900 bg-slate-900 shadow-2xl shadow-electric/5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4">
-            <Zap size={40} className="text-electric opacity-10 animate-pulse" fill="currentColor" />
-          </div>
+        <div className="card p-8 space-y-6 border-white/5 bg-slate-950/40 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-electric/5 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+          
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-14 h-14 rounded-2xl bg-electric shadow-lg shadow-electric/20 flex items-center justify-center text-slate-900 animate-zap">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-electric animate-zap">
               <ShieldCheck size={28} strokeWidth={3} />
             </div>
             <div>
-              <h3 className="font-black text-white text-lg">Transmission Security</h3>
-              <p className="text-xs font-black text-electric uppercase tracking-widest leading-none">Authentication Tokens</p>
+              <h3 className="font-black text-white text-lg leading-tight">Transmission Security</h3>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mt-1">Authentication Tokens</p>
             </div>
           </div>
 
@@ -93,23 +92,23 @@ export default function Settings() {
         </div>
 
         {/* General Site Settings */}
-        <div className="card p-8 space-y-6 border-emerald-100 bg-emerald-50/20">
+        <div className="card p-8 space-y-6 border-white/5 bg-slate-950/20 backdrop-blur-md">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/20 flex items-center justify-center text-white">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-brand">
               <Globe size={28} />
             </div>
             <div>
-              <h3 className="font-black text-slate-800">Site Branding</h3>
-              <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Identify your workspace</p>
+              <h3 className="font-black text-white text-lg leading-tight">Domain Branding</h3>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mt-1">Digital Identifier</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Workspace Name</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2 italic">Workspace Signal Name</label>
               <input
                 type="text"
-                className="input-field !bg-white !rounded-[24px] !py-4 !px-6 border-emerald-100 focus:ring-emerald-500/10 focus:border-emerald-500"
+                className="w-full bg-slate-900/50 border-2 border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:border-brand/40 transition-all text-white placeholder:text-slate-600 font-bold italic"
                 value={settings.siteName}
                 onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                 placeholder="e.g. Skyline Construction Site"
@@ -121,12 +120,12 @@ export default function Settings() {
         <button
           type="submit"
           disabled={saving}
-          className="btn-primary w-full flex items-center justify-center gap-2"
+          className="w-full py-5 bg-electric text-slate-950 rounded-2xl text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-electric/20 flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50"
         >
-          {saving ? 'Saving...' : (
+          {saving ? 'Transmitting...' : (
             <>
-              <Save size={18} />
-              Save Changes
+              <Save size={18} strokeWidth={3} />
+              Commit Config
             </>
           )}
         </button>

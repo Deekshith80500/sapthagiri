@@ -6,7 +6,7 @@
   --color-brand: #3b82f6;
   --color-brand-dark: #1d4ed8;
   --color-brand-light: #eff6ff;
-  --color-surface: #f8fafc;
+  --color-surface: #030712;
   --color-accent-orange: #f97316;
   --color-accent-green: #22c55e;
   --color-accent-purple: #8b5cf6;
@@ -31,8 +31,32 @@
 
 @layer base {
   body {
-    @apply bg-surface text-slate-900 font-sans antialiased;
+    @apply bg-surface text-slate-200 font-sans antialiased min-h-screen relative overflow-x-hidden;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10 L40 30 L35 30 L45 50 L25 30 L30 30 Z' fill='%23fbbf24' fill-opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
   }
 }
 
@@ -41,7 +65,7 @@
 }
 
 .card {
-  @apply bg-white rounded-3xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-shadow;
+  @apply bg-slate-900/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/5 p-6 hover:border-brand/20 transition-all;
 }
 
 .btn-primary {

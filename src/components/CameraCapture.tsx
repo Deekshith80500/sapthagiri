@@ -105,8 +105,8 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center p-4"
     >
-      <div className="w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white">
-        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-900 text-white relative overflow-hidden">
+      <div className="w-full max-w-md bg-slate-950 rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/10">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-slate-900 text-white relative overflow-hidden backdrop-blur-xl">
           <div className="absolute top-0 right-10 p-2">
             <Zap size={40} className="text-electric opacity-10 animate-zap" fill="currentColor" />
           </div>
@@ -114,8 +114,8 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
             <h3 className="text-xl font-black">{capturedImage ? 'Review Scan' : title}</h3>
             {profilePhoto && <p className="text-[10px] text-electric font-black uppercase tracking-[0.2em] mt-1 flex items-center gap-1.5"><Zap size={10} fill="currentColor" /> Biometric Grid Security</p>}
           </div>
-          <button onClick={() => { stopCamera(); onClose(); }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white/40 hover:bg-white/20 transition-colors z-10">
-            <X size={20} />
+          <button onClick={() => { stopCamera(); onClose(); }} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-500 hover:bg-rose-500/20 hover:text-rose-500 transition-colors z-10">
+            <X size={24} />
           </button>
         </div>
 
@@ -192,7 +192,7 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
           <canvas ref={canvasRef} className="hidden" />
         </div>
 
-        <div className="p-10 flex flex-col items-center gap-6">
+        <div className="p-10 flex flex-col items-center gap-6 bg-slate-950">
           {!capturedImage ? (
             <button 
               onClick={capturePhoto}
@@ -207,7 +207,7 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
               <button 
                 onClick={handleRetake}
                 disabled={verifying}
-                className="flex-1 py-5 bg-slate-100 rounded-[24px] flex items-center justify-center gap-3 text-slate-500 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-500 transition-all disabled:opacity-50"
+                className="flex-1 py-5 bg-white/5 rounded-[24px] flex items-center justify-center gap-3 text-slate-500 font-black uppercase tracking-widest text-[10px] hover:bg-rose-500/20 hover:text-rose-50 transition-all disabled:opacity-50 border border-white/5"
               >
                 <RefreshCw size={18} strokeWidth={3} />
                 Retake
@@ -215,10 +215,10 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
               <button 
                 onClick={handleConfirm}
                 disabled={!canConfirm}
-                className={`flex-1 py-5 rounded-[24px] flex items-center justify-center gap-3 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all ${
+                className={`flex-1 py-5 rounded-[24px] flex items-center justify-center gap-3 text-slate-950 font-black uppercase tracking-widest text-[10px] shadow-2xl transition-all ${
                   canConfirm 
                     ? 'bg-emerald-500 shadow-emerald-500/30 hover:scale-[1.02] active:scale-95' 
-                    : 'bg-slate-200 text-slate-400 shadow-none grayscale cursor-not-allowed'
+                    : 'bg-white/5 text-slate-600 shadow-none grayscale cursor-not-allowed border border-white/5'
                 }`}
               >
                 <Check size={18} strokeWidth={4} />
@@ -226,7 +226,7 @@ export default function CameraCapture({ onCapture, onClose, title, profilePhoto 
               </button>
             </div>
           )}
-          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">{capturedImage ? 'Ensure your face is clearly visible' : 'Center the face in the frame'}</p>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">{capturedImage ? 'Ensure your signal is clear' : 'Calibrating Biometric Sensor'}</p>
         </div>
       </div>
     </motion.div>

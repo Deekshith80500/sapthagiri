@@ -63,22 +63,23 @@ export default function Dashboard() {
             <div className="w-10 h-10 bg-electric rounded-2xl flex items-center justify-center text-slate-800 shadow-lg shadow-electric/20 animate-zap">
               <Zap size={20} strokeWidth={3} fill="currentColor" />
             </div>
-            <h2 className="text-4xl font-black text-slate-800 tracking-tight">{settings?.siteName || 'Dashboard'}</h2>
+            <h2 className="text-4xl font-black text-white tracking-tight">{settings?.siteName || 'Dashboard'}</h2>
           </div>
-          <div className="flex items-center gap-2 text-slate-400">
-            <Calendar size={14} className="text-brand" />
+          <div className="flex items-center gap-2 text-slate-500">
+            <Zap size={14} className="text-electric animate-zap" fill="currentColor" />
             <span className="text-[10px] font-black uppercase tracking-[0.3em]">{format(new Date(), 'EEEE, MMMM dd, yyyy')}</span>
           </div>
         </div>
         
         {user?.role === 'owner' && settings && (
-          <div className="flex items-center gap-3 bg-white p-2 rounded-[24px] shadow-sm border border-slate-100">
-            <div className="w-12 h-12 rounded-2xl bg-brand-light flex items-center justify-center text-brand">
-              <ShieldCheck size={24} strokeWidth={3} />
+          <div className="flex items-center gap-4 bg-slate-950 p-3 rounded-[32px] border-2 border-electric/20 shadow-2xl shadow-electric/10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-electric/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-12 h-12 rounded-2xl bg-electric text-slate-950 flex items-center justify-center relative z-10 animate-zap">
+              <ShieldCheck size={24} strokeWidth={4} />
             </div>
-            <div className="pr-4">
-              <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Leader Access Code</p>
-              <p className="text-xl font-mono font-black text-brand tracking-widest">{settings.leaderInviteCode}</p>
+            <div className="relative z-10 pr-4">
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 leading-none mb-1.5">Security Token</p>
+              <p className="text-2xl font-mono font-black text-electric tracking-[0.2em] drop-shadow-[0_0_12px_#fbbf24] leading-none">{settings.leaderInviteCode}</p>
             </div>
           </div>
         )}
@@ -140,22 +141,22 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card p-8 bg-white border-2 border-brand/5 shadow-2xl shadow-slate-900/5 flex flex-col items-center justify-center text-center relative overflow-hidden">
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand/5 rounded-full blur-2xl" />
-          <div className="w-20 h-20 bg-brand-light text-brand rounded-[32px] flex items-center justify-center mb-6 shadow-inner">
-            <Info size={40} strokeWidth={2.5} />
+        <div className="card p-8 bg-white/5 border-2 border-white/5 shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden backdrop-blur-md group/logs">
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-electric/10 rounded-full blur-3xl opacity-20" />
+          <div className="w-20 h-20 bg-white/5 text-electric rounded-[32px] flex items-center justify-center mb-6 shadow-2xl border border-white/10 group-hover/logs:scale-110 transition-all duration-500">
+            <Info size={40} strokeWidth={2.5} className="animate-zap" />
           </div>
-          <h3 className="text-2xl font-black text-slate-800 mb-2">Automated Logs</h3>
-          <p className="text-sm text-slate-400 font-bold mb-8 max-w-[200px] leading-relaxed">Systematic attendance records for all team members.</p>
+          <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Automated Logs</h3>
+          <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-8 max-w-[220px] leading-relaxed">High-Voltage Attendance Records</p>
           <button 
             onClick={() => {
               const summary = `Daily Attendance Summary (${format(new Date(), 'MMM d, yyyy')})\n\nTotal Workers: ${workers.length}\nPresent: ${presentWorkers.length}\nAbsent: ${absentWorkers.length}\nPending: ${pendingWorkers.length}\n\nGenerated from ${settings?.siteName || 'Attendance Hub'}.`;
               navigator.clipboard.writeText(summary);
               alert("Daily summary copied to clipboard!");
             }}
-            className="w-full max-w-[200px] py-4 bg-slate-900 text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-electric hover:text-slate-900 transition-all shadow-xl shadow-slate-900/10 active:scale-95 flex items-center justify-center gap-2 group"
+            className="w-full max-w-[200px] py-4 bg-electric text-slate-950 rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-electric/20 flex items-center justify-center gap-2 group/btn"
           >
-            <Zap size={14} className="group-hover:animate-zap" fill="currentColor" />
+            <Zap size={14} className="group-hover/btn:animate-bounce" fill="currentColor" />
             Copy Summary
           </button>
         </div>
@@ -179,8 +180,8 @@ export default function Dashboard() {
                 <Icon className={stat.color} size={28} />
               </div>
               <div className="relative z-10">
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">{stat.label}</p>
-                <p className="text-3xl font-black text-slate-900">{stat.value}</p>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest leading-none mb-2">{stat.label}</p>
+                <p className="text-3xl font-black text-white">{stat.value}</p>
               </div>
             </motion.div>
           );
@@ -191,25 +192,25 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Attendance Summary */}
         <div className="space-y-4">
-          <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
-            Detailed Summary
-            <span className="text-xs font-normal text-gray-400"> (Today)</span>
+          <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+            Status Feed
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest"> (Cycle Active)</span>
           </h3>
           
           <div className="space-y-6">
             {/* Present List */}
             {presentWorkers.length > 0 && (
-              <div className="bg-white rounded-[32px] border-2 border-emerald-50 overflow-hidden shadow-xl shadow-emerald-500/5">
+              <div className="bg-slate-950/40 rounded-[32px] border-2 border-emerald-500/10 overflow-hidden shadow-2xl">
                 <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 px-8 py-5">
                   <p className="text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                    <UserCheck size={20} strokeWidth={3} /> {presentWorkers.length} Active Professionals
+                    <UserCheck size={20} strokeWidth={3} /> {presentWorkers.length} Active Feed
                   </p>
                 </div>
-                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-emerald-50/20">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-950/20 backdrop-blur-md">
                   {presentWorkers.map(w => (
-                    <div key={w.id} className="flex items-center justify-between py-3 px-4 bg-white rounded-2xl shadow-sm border border-emerald-100/50 group hover:scale-[1.02] transition-transform">
-                      <span className="font-black text-slate-700 text-xs">{w.name}</span>
-                      <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-100 flex items-center justify-center px-2 py-0.5 rounded-full">{w.role}</span>
+                    <div key={w.id} className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-2xl shadow-sm border border-white/5 group hover:bg-white/10 transition-all">
+                      <span className="font-black text-slate-300 text-xs">{w.name}</span>
+                      <span className="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 flex items-center justify-center px-3 py-1 rounded-full">{w.role}</span>
                     </div>
                   ))}
                 </div>
@@ -218,17 +219,17 @@ export default function Dashboard() {
 
             {/* Absent List */}
             {absentWorkers.length > 0 && (
-              <div className="bg-white rounded-[32px] border-2 border-rose-50 overflow-hidden shadow-xl shadow-rose-500/5">
+              <div className="bg-slate-950/40 rounded-[32px] border-2 border-rose-500/10 overflow-hidden shadow-2xl">
                 <div className="bg-gradient-to-r from-rose-500 to-rose-400 px-8 py-5">
                   <p className="text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                    <UserX size={20} strokeWidth={3} /> {absentWorkers.length} Absent Today
+                    <UserX size={20} strokeWidth={3} /> {absentWorkers.length} Off Net
                   </p>
                 </div>
-                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-rose-50/20">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-950/20 backdrop-blur-md">
                   {absentWorkers.map(w => (
-                    <div key={w.id} className="flex items-center justify-between py-3 px-4 bg-white rounded-2xl shadow-sm border border-rose-100/50 group hover:scale-[1.02] transition-transform">
-                      <span className="font-black text-slate-700 text-xs">{w.name}</span>
-                      <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-100 flex items-center justify-center px-2 py-0.5 rounded-full">{w.role}</span>
+                    <div key={w.id} className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-2xl shadow-sm border border-white/5 group hover:bg-white/10 transition-all">
+                      <span className="font-black text-slate-300 text-xs">{w.name}</span>
+                      <span className="text-[9px] font-black uppercase text-rose-400 bg-rose-500/10 flex items-center justify-center px-3 py-1 rounded-full">{w.role}</span>
                     </div>
                   ))}
                 </div>
@@ -236,15 +237,15 @@ export default function Dashboard() {
             )}
 
             {pendingWorkers.length > 0 && (
-              <div className="bg-white rounded-[32px] border-2 border-amber-50 overflow-hidden shadow-xl shadow-amber-500/5">
+              <div className="bg-slate-950/40 rounded-[32px] border-2 border-amber-500/10 overflow-hidden shadow-2xl">
                 <div className="bg-gradient-to-r from-amber-500 to-amber-400 px-8 py-5">
                   <p className="text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
-                    <Clock size={20} strokeWidth={3} /> {pendingWorkers.length} Pending Attention
+                    <Clock size={20} strokeWidth={3} /> {pendingWorkers.length} Waiting
                   </p>
                 </div>
-                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-2 bg-amber-50/20">
+                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-950/20 backdrop-blur-md">
                    {pendingWorkers.map(w => (
-                    <div key={w.id} className="text-[10px] text-amber-700 font-black uppercase bg-white border border-amber-100/50 rounded-xl py-3 px-3 shadow-sm text-center">
+                    <div key={w.id} className="text-[10px] text-amber-500 font-black uppercase bg-white/5 border border-white/5 rounded-xl py-3 px-3 shadow-sm text-center">
                       {w.name.split(' ')[0]}
                     </div>
                   ))}
@@ -264,43 +265,43 @@ export default function Dashboard() {
         {/* Recent Activity / Worker List Preview */}
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-xl font-black text-slate-800 tracking-tight">Recent Activity</h3>
-            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] bg-brand-light px-3 py-1 rounded-full">Top 5</span>
+            <h3 className="text-xl font-black text-white tracking-tight">Recent Activity</h3>
+            <span className="text-[10px] font-black text-brand uppercase tracking-[0.2em] bg-brand/10 border border-brand/20 px-3 py-1 rounded-full">Top 5</span>
           </div>
           <div className="space-y-4">
             {workers.slice(0, 5).map((worker) => {
               const status = todayRecords.find(a => a.workerId === worker.id)?.status;
               return (
-                <div key={worker.id} className="card p-4 flex items-center justify-between hover:bg-slate-50 transition-colors group">
+                <div key={worker.id} className="card p-4 flex items-center justify-between hover:bg-white/5 transition-all group">
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       {worker.photo ? (
-                        <img src={worker.photo} alt={worker.name} className="w-12 h-12 rounded-xl object-cover border-2 border-brand/10 shadow-sm" />
+                        <img src={worker.photo} alt={worker.name} className="w-12 h-12 rounded-xl object-cover border-2 border-white/5 shadow-2xl" />
                       ) : (
-                        <div className="w-12 h-12 bg-brand-light rounded-xl flex items-center justify-center text-brand">
+                        <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-brand">
                           <UserIcon size={20} />
                         </div>
                       )}
-                      <div className={`absolute -right-1 -bottom-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ${
-                        status === 'present' ? 'bg-emerald-500' : status === 'absent' ? 'bg-rose-500' : 'bg-slate-300'
+                      <div className={`absolute -right-1 -bottom-1 w-4 h-4 rounded-full border-2 border-slate-900 shadow-sm ${
+                        status === 'present' ? 'bg-emerald-500 animate-pulse' : status === 'absent' ? 'bg-rose-500' : 'bg-slate-600'
                       }`} />
                     </div>
                     <div>
-                      <p className="font-black text-slate-800 tracking-tight">{worker.name}</p>
-                      <p className="text-[10px] text-brand font-black uppercase tracking-widest">{worker.role}</p>
+                      <p className="font-black text-white tracking-tight leading-none mb-1">{worker.name}</p>
+                      <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{worker.role}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
                       status === 'present' 
-                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm shadow-emerald-500/10' 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-lg shadow-emerald-500/10' 
                         : status === 'absent' 
-                        ? 'bg-rose-50 text-rose-600 border border-rose-100 shadow-sm shadow-rose-500/10' 
-                        : 'bg-slate-50 text-slate-400 border border-slate-100'
+                        ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-lg shadow-rose-500/10' 
+                        : 'bg-white/5 text-slate-500 border border-white/5'
                     }`}>
                       {status || 'Pending'}
                     </div>
-                    <ChevronRight size={18} className="text-slate-200 group-hover:text-brand transition-colors" />
+                    <ChevronRight size={18} className="text-slate-700 group-hover:text-brand transition-colors" />
                   </div>
                 </div>
               );

@@ -102,14 +102,14 @@ function Layout() {
       </div>
 
       {/* Mobile Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <header className="bg-slate-950/60 backdrop-blur-md border-b border-white/5 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-electric rounded-lg flex items-center justify-center text-slate-800 shadow-sm shadow-electric/20 animate-zap">
+          <div className="w-8 h-8 bg-electric rounded-lg flex items-center justify-center text-slate-950 shadow-sm shadow-electric/20 animate-zap">
             <Zap size={16} strokeWidth={3} fill="currentColor" />
           </div>
-          <h1 className="text-xl font-black tracking-tighter text-slate-800 uppercase">Power<span className="text-brand">Hub</span></h1>
+          <h1 className="text-xl font-black tracking-tighter text-white uppercase">Power<span className="text-brand">Hub</span></h1>
         </div>
-        <button onClick={() => setIsMenuOpen(true)} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-500 hover:text-brand transition-colors">
+        <button onClick={() => setIsMenuOpen(true)} className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 hover:text-brand transition-colors">
           <Menu size={24} />
         </button>
       </header>
@@ -137,7 +137,7 @@ function Layout() {
       </main>
 
       {/* Bottom Nav for Mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 flex justify-around items-center px-4 py-2 z-40 h-[72px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+      <nav className="fixed bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center px-4 py-2 z-40 h-[72px] shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
         {filteredNav.map(item => {
           const isActive = location.pathname === item.path || (item.path === '/' && location.pathname === '/');
           const Icon = item.icon;
@@ -146,10 +146,10 @@ function Layout() {
               key={item.path} 
               to={item.path}
               className={`flex flex-col items-center justify-center gap-1 w-16 h-16 rounded-2xl transition-all ${
-                isActive ? 'text-brand scale-110' : 'text-slate-400'
+                isActive ? 'text-electric scale-110' : 'text-slate-500'
               }`}
             >
-              <div className={`p-2.5 rounded-xl transition-all ${isActive ? 'bg-brand-light shadow-inner' : ''}`}>
+              <div className={`p-2.5 rounded-xl transition-all ${isActive ? 'bg-electric/10 shadow-inner' : ''}`}>
                 <Icon size={22} strokeWidth={isActive ? 3 : 2} />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tighter transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
@@ -176,11 +176,11 @@ function Layout() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-white z-[60] shadow-2xl p-8 flex flex-col"
+              className="fixed right-0 top-0 bottom-0 w-3/4 max-w-xs bg-slate-950 z-[60] shadow-2xl p-8 flex flex-col border-l border-white/5"
             >
               <button 
                 onClick={() => setIsMenuOpen(false)}
-                className="self-end p-2 -mr-2 mb-8"
+                className="self-end p-2 -mr-2 mb-8 text-slate-400 hover:text-white"
               >
                 <X size={24} />
               </button>
@@ -210,15 +210,15 @@ function Layout() {
                       onClick={() => setIsMenuOpen(false)}
                       className={`flex items-center gap-4 p-4 rounded-[24px] transition-all ${
                         isActive 
-                          ? 'bg-brand text-white shadow-xl shadow-brand/30 ring-4 ring-brand/10' 
-                          : 'text-slate-600 hover:bg-brand-light hover:text-brand'
+                          ? 'bg-electric text-slate-950 shadow-xl shadow-electric/30' 
+                          : 'text-slate-400 hover:bg-white/5 hover:text-white'
                       }`}
                     >
-                      <div className={`p-2 rounded-xl ${isActive ? 'bg-white/20' : 'bg-slate-50'}`}>
+                      <div className={`p-2 rounded-xl ${isActive ? 'bg-slate-950/20' : 'bg-white/5'}`}>
                         <Icon size={20} strokeWidth={isActive ? 3 : 2} />
                       </div>
                       <span className="font-black text-sm uppercase tracking-wide">{item.label}</span>
-                      {isActive && <motion.div layoutId="activeInd" className="ml-auto w-2 h-2 bg-white rounded-full shadow-sm" />}
+                      {isActive && <motion.div layoutId="activeInd" className="ml-auto w-2 h-2 bg-slate-950 rounded-full shadow-sm" />}
                     </Link>
                    );
                 })}
@@ -226,10 +226,12 @@ function Layout() {
 
               <button 
                 onClick={logout}
-                className="mt-auto flex items-center gap-3 p-4 text-red-500 font-medium"
+                className="mt-auto flex items-center gap-4 p-4 rounded-[24px] text-rose-500 font-black uppercase tracking-widest text-xs hover:bg-rose-500/10 transition-all group"
               >
-                <LogOut size={20} />
-                <span>Sign Out</span>
+                <div className="p-2 rounded-xl bg-rose-500/10 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                  <LogOut size={20} strokeWidth={3} />
+                </div>
+                <span>Terminate Session</span>
               </button>
             </motion.div>
           </>
